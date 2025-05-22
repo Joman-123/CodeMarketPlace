@@ -208,21 +208,16 @@ const ChartTooltipContent = React.forwardRef<
                       !hideIndicator && (
                         <div
                           className={cn(
-                            "shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]",
+                            "shrink-0 rounded-[2px] chart-indicator",
                             {
                               "h-2.5 w-2.5": indicator === "dot",
                               "w-1": indicator === "line",
                               "w-0 border-[1.5px] border-dashed bg-transparent":
                                 indicator === "dashed",
                               "my-0.5": nestLabel && indicator === "dashed",
+                              [`chart-indicator-color-${(indicatorColor || "").replace("#", "")}`]: !!indicatorColor,
                             }
                           )}
-                          style={
-                            {
-                              "--color-bg": indicatorColor,
-                              "--color-border": indicatorColor,
-                            } as React.CSSProperties
-                          }
                         />
                       )
                     )}
@@ -300,10 +295,10 @@ const ChartLegendContent = React.forwardRef<
                 <itemConfig.icon />
               ) : (
                 <div
-                  className="h-2 w-2 shrink-0 rounded-[2px]"
-                  style={{
-                    backgroundColor: item.color,
-                  }}
+                  className={cn(
+                    "h-2 w-2 shrink-0 rounded-[2px]",
+                    item.color ? `chart-legend-color-${item.color.replace("#", "")}` : ""
+                  )}
                 />
               )}
               {itemConfig?.label}
@@ -363,3 +358,11 @@ export {
   ChartLegendContent,
   ChartStyle,
 }
+
+/* Add the following CSS to your global stylesheet (e.g., chart.css or globals.css):
+
+.chart-legend-color-ff0000 { background-color: #ff0000; }
+.chart-legend-color-00ff00 { background-color: #00ff00; }
+.chart-legend-color-0000ff { background-color: #0000ff; }
+/* Add more classes as needed for your color palette */
+
