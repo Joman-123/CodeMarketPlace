@@ -13,6 +13,7 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import { AppLayout } from "@/components/AppLayout";
 import { AuthProvider } from "@/lib/authContext";
+import AssetUpload from "./pages/asset-upload";
 
 function Router() {
   return (
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/creator/:id" component={CreatorProfile} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
+      <Route path="/upload" component={AssetUpload} />
       <Route component={NotFound} />
     </Switch>
   );

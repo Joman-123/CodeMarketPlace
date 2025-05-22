@@ -6,6 +6,7 @@ import { insertAssetSchema, insertCategorySchema, insertUserSchema } from "@shar
 import { login, signup, getCurrentUser, logout, authMiddleware } from "./auth";
 import session from "express-session";
 import { log } from "./vite";
+import { registerUploadRoute } from "./upload";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure session middleware
@@ -207,6 +208,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create asset" });
     }
   });
+
+  registerUploadRoute(app);
 
   const httpServer = createServer(app);
 
