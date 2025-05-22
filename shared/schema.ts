@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, foreignKey } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -22,7 +22,6 @@ export const categories = pgTable("categories", {
   iconName: text("icon_name").notNull(), // Refers to Remix icon class names
   assetCount: integer("asset_count").default(0),
 });
-
 // Assets table
 export const assets = pgTable("assets", {
   id: serial("id").primaryKey(),
