@@ -33,27 +33,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User routes
   app.get("/api/users/:id", async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
-    
+
     if (isNaN(userId)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
-    
+
     const user = await storage.getUser(userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     // Don't send password to client
     const { password, ...userWithoutPassword } = user;
     res.json(userWithoutPassword);
   });
-  
+
   app.post("/api/users", async (req: Request, res: Response) => {
     try {
       const userData = insertUserSchema.parse(req.body);
       const user = await storage.createUser(userData);
-      
+
       // Don't send password to client
       const { password, ...userWithoutPassword } = user;
       res.status(201).json(userWithoutPassword);
@@ -64,17 +64,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create user" });
     }
   });
-  
+
   app.get("/api/creators", async (req: Request, res: Response) => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
     const creators = await storage.getCreators(limit);
-    
+
     // Don't send passwords to client
     const creatorsWithoutPasswords = creators.map(creator => {
       const { password, ...creatorWithoutPassword } = creator;
       return creatorWithoutPassword;
     });
-    
+
     res.json(creatorsWithoutPasswords);
   });
 
@@ -83,23 +83,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const categories = await storage.getCategories();
     res.json(categories);
   });
-  
+
   app.get("/api/categories/:id", async (req: Request, res: Response) => {
     const categoryId = parseInt(req.params.id);
-    
+
     if (isNaN(categoryId)) {
       return res.status(400).json({ message: "Invalid category ID" });
     }
-    
+
     const category = await storage.getCategoryById(categoryId);
-    
+
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
-    
+
     res.json(category);
   });
-  
+
   app.post("/api/categories", async (req: Request, res: Response) => {
     try {
       const categoryData = insertCategorySchema.parse(req.body);
@@ -121,96 +121,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       creatorId,
       featured
     } = req.query;
-    
+
     const options = {
       limit: limit ? parseInt(limit as string) : undefined,
       categoryId: categoryId ? parseInt(categoryId as string) : undefined,
       creatorId: creatorId ? parseInt(creatorId as string) : undefined,
       featured: featured ? featured === 'true' : undefined
     };
-    
+
     const assets = await storage.getAssets(options);
     res.json(assets);
   });
-  
+
   app.get("/api/assets/featured", async (req: Request, res: Response) => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
     const featuredAssets = await storage.getFeaturedAssets(limit);
     res.json(featuredAssets);
   });
-  
+
   app.get("/api/assets/recent", async (req: Request, res: Response) => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
     const recentAssets = await storage.getRecentAssets(limit);
     res.json(recentAssets);
   });
-  
+
   app.get("/api/assets/trending", async (req: Request, res: Response) => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
     const trendingAssets = await storage.getTrendingAssets(limit);
     res.json(trendingAssets);
   });
-  
+
   app.get("/api/assets/search", async (req: Request, res: Response) => {
     const query = req.query.q as string;
-    
+
     if (!query) {
       return res.status(400).json({ message: "Search query is required" });
     }
-    
+
     const searchResults = await storage.searchAssets(query);
     res.json(searchResults);
   });
-  
-  app.get("/api/assets/download/:id", authMiddleware, async (req: Request, res: Response) => {
-  const assetId = parseInt(req.params.id);
-  // @ts-ignore - user is set by authMiddleware
-  const userId = req.user.id;
-  
-  // Check if user has purchased the asset
-  const hasPurchased = await storage.checkPurchase(userId, assetId);
-  if (!hasPurchased) {
-    return res.status(403).json({ error: 'Asset not purchased' });
-  }
-  
-  // Generate temporary download URL
-  const downloadUrl = await storage.generateDownloadUrl(assetId);
-  res.json({ downloadUrl });
+
+  app.get("/api/assets/:id", authMiddleware, async (req: Request, res: Response) => {
     const assetId = parseInt(req.params.id);
-    
+    // @ts-ignore - user is set by authMiddleware
+    const userId = req.user.id;
+
     if (isNaN(assetId)) {
-      return res.status(400).json({ message: "Invalid asset ID" });
+      return res.status(400).json({ error: 'Invalid asset ID' });
     }
-    
-    const asset = await storage.getAssetById(assetId);
-    
-    if (!asset) {
-      return res.status(404).json({ message: "Asset not found" });
+
+    // Check if user has purchased the asset
+    const hasPurchased = await storage.checkPurchase(userId, assetId);
+    if (!hasPurchased) {
+      return res.status(403).json({ error: 'Asset not purchased' });
     }
-    
-    res.json(asset);
+
+    // Generate temporary download URL
+    const downloadUrl = await storage.generateDownloadUrl(assetId);
+    res.json({ downloadUrl });
   });
-  
+
   app.post("/api/assets", authMiddleware, async (req: Request, res: Response) => {
     try {
       // @ts-ignore - user is set by authMiddleware
       const user = req.user;
-      
+
       // Check if user is a creator
       if (!user.isCreator) {
         return res.status(403).json({ 
           message: "Only creators can publish assets" 
         });
       }
-      
+
       const assetData = insertAssetSchema.parse(req.body);
-      
+
       // Set creatorId to current user's ID
       const assetWithCreator = {
         ...assetData,
         creatorId: user.id
       };
-      
+
       const asset = await storage.createAsset(assetWithCreator);
       res.status(201).json(asset);
     } catch (error) {
