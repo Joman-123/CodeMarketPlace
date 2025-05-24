@@ -162,7 +162,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(searchResults);
   });
   
-  app.get("/api/assets/:id", async (req: Request, res: Response) => {
+  app.get("/api/assets/download/:id", authMiddleware, async (req: Request, res: Response) => {
+  const assetId = parseInt(req.params.id);
+  // @ts-ignore - user is set by authMiddleware
+  const userId = req.user.id;
+  
+  // Check if user has purchased the asset
+  const hasPurchased = await storage.checkPurchase(userId, assetId);
+  if (!hasPurchased) {
+    return res.status(403).json({ error: 'Asset not purchased' });
+  }
+  
+  // Generate temporary download URL
+  const downloadUrl = await storage.generateDownloadUrl(assetId);
+  res.json({ downloadUrl });
     const assetId = parseInt(req.params.id);
     
     if (isNaN(assetId)) {

@@ -19,10 +19,27 @@ export function registerUploadRoute(app: Express) {
       cb(null, uploadDir);
     },
     filename: function (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
-      cb(null, Date.now() + "-" + file.originalname);
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     },
   });
-  const upload = multer({ storage });
+
+  const fileFilter = (req: any, file: any, cb: any) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/zip'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'), false);
+    }
+  };
+
+  const upload = multer({ 
+    storage,
+    fileFilter,
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB limit
+    }
+  });
 
   // مسار رفع الملفات
   app.post("/api/upload", upload.single("file"), (req: Request, res: Response) => {

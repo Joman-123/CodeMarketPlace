@@ -43,16 +43,23 @@ export async function createPaymentIntent(asset: AssetWithDetails): Promise<Paym
 }
 
 export async function processPayment(
-  paymentIntent: PaymentIntent, 
+  paymentIntent: PaymentIntent,
   paymentMethod: PaymentMethod
 ): Promise<{success: boolean, downloadUrl?: string}> {
-  // In a real implementation, this would confirm the payment
-  // with Stripe or another payment processor
-  
   try {
-    // Simulate successful payment processing
-    // In production this would be a server call
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
+    const response = await apiRequest.post('/api/payments/process', {
+      paymentIntentId: paymentIntent.id,
+      paymentMethodId: paymentMethod.id,
+      assetId: paymentIntent.assetId
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return {
+        success: true,
+        downloadUrl: data.downloadUrl
+      };
+    }
     
     const randomSuccess = Math.random() > 0.1; // 90% chance of success for demo purposes
     
