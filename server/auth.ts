@@ -49,10 +49,13 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    // In a real app, we'd use bcrypt.compare(password, user.password)
-    // For demo purposes, we'll do a simple comparison 
-    if (password !== user.password) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    try {
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+    } catch (error) {
+      return res.status(500).json({ error: 'Password verification failed' });
     }
     
     // @ts-ignore - Set user session
@@ -87,10 +90,12 @@ export const signup = async (req: Request, res: Response) => {
       return res.status(409).json({ error: 'Username already exists' });
     }
     
-    // In a real app, we'd hash the password: userData.password = await bcrypt.hash(userData.password, 10)
+    // Hash password before storing
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const userDataWithHash = { ...userData, password: hashedPassword };
     
     // Create user
-    const newUser = await storage.createUser(userData);
+    const newUser = await storage.createUser(userDataWithHash);
     
     // @ts-ignore - Set user session
     req.session.userId = newUser.id;
