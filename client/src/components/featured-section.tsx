@@ -24,11 +24,13 @@ export function FeaturedSection() {
               <span>Get Access</span>
               <span className="ml-2 font-bold">$149</span>
             </Button>
-            <Link href="/collection/creative-pro-toolkit">
-              <div className="text-primary hover:text-primary/90 font-medium flex items-center cursor-pointer">
-                Learn More <i className="ri-arrow-right-line ml-1"></i>
-              </div>
-            </Link>
+            <Button
+              variant="link"
+              className="text-primary hover:text-primary/90 font-medium flex items-center p-0"
+              onClick={() => window.location.href = '/collection/creative-pro-toolkit'}
+            >
+              Learn More <i className="ri-arrow-right-line ml-1"></i>
+            </Button>
           </div>
         </div>
       </div>

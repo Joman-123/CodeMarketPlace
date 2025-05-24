@@ -14,7 +14,7 @@ localPort = 5000
 externalPort = 80
 
 [workflows]
-runButton = "Start Full Stack"
+runButton = "Start Dev Environment"
 
 [[workflows.workflow]]
 name = "Project"
@@ -46,3 +46,12 @@ args = "cd client && npm run dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Start Dev Environment"
+author = 43075084
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd client && npm run dev & npm run dev"
