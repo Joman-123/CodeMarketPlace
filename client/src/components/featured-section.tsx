@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
@@ -26,9 +25,9 @@ export function FeaturedSection() {
               <span className="ml-2 font-bold">$149</span>
             </Button>
             <Link href="/collection/creative-pro-toolkit">
-              <span className="text-primary hover:text-primary/90 font-medium flex items-center cursor-pointer">
+              <div className="text-primary hover:text-primary/90 font-medium flex items-center cursor-pointer">
                 Learn More <i className="ri-arrow-right-line ml-1"></i>
-              </span>
+              </div>
             </Link>
           </div>
         </div>
