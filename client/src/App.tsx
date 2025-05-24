@@ -38,7 +38,16 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <AppLayout>
-            <Router />
+            <Switch>
+              <Route path="/" component={Home} />
+              <Route path="/login" component={Login} />
+              <Route path="/signup" component={Signup} />
+              <Route path="/explore" component={Explore} />
+              <Route path="/asset/:id" component={AssetDetails} />
+              <Route path="/upload" component={AssetUpload} />
+              <Route path="/profile/:username" component={CreatorProfile} />
+              <Route component={NotFound} />
+            </Switch>
           </AppLayout>
         </TooltipProvider>
       </AuthProvider>
