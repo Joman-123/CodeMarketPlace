@@ -25,12 +25,12 @@ export function FeaturedSection() {
               <span className="ml-2 font-bold">$149</span>
             </Button>
             <Button
-                variant="link"
-                className="text-primary hover:text-primary/90 font-medium flex items-center p-0"
-                onClick={() => window.location.href = '/collection/creative-pro-toolkit'}
-              >
-                Learn More <i className="ri-arrow-right-line ml-1"></i>
-              </Button>
+              variant="ghost"
+              className="text-primary hover:text-primary/90 font-medium flex items-center p-0"
+              onClick={() => window.location.href = '/collection/creative-pro-toolkit'}
+            >
+              Learn More <i className="ri-arrow-right-line ml-1"></i>
+            </Button>
           </div>
         </div>
       </div>
